@@ -1,0 +1,122 @@
+﻿@page "/upload-individuals-mud"
+@using System.Globalization
+@using System.IO
+@using System.Linq
+@using System.Reflection
+@using System.Text.RegularExpressions
+@using CsvHelper
+@using CsvHelper.Configuration
+@using Microsoft.AspNetCore.Components.Forms
+@using MudBlazor
+@inject GenIndividualsLoader Loader
+
+<MudPaper Class="pa-4 mx-auto" Elevation="4" Style="max-width:600px">
+    <MudText Typo="Typo.h5" Class="mb-2">Upload “gen_individuals” CSV</MudText>
+
+    <MudFileUpload T="IBrowserFile"
+                   @ref="_fileUpload"
+                   Accept=".csv"
+                   ShowDropZone="true"
+                   DropZoneText="Drag & drop CSV here or click to browse"
+                   MaxFileSize="@long.MaxValue"
+                   FilesChanged="HandleFileSelected">
+        <ActivatorContent>
+            <MudButton Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       OnClick="@(async () => await _fileUpload!.OpenFilePickerAsync())">
+                Choose or Drop CSV
+            </MudButton>
+        </ActivatorContent>
+    </MudFileUpload>
+
+    <div class="mt-4">
+        @if (IsProcessing)
+        {
+            <MudProgressCircular Indeterminate="true" />
+        }
+        @if (!string.IsNullOrEmpty(StatusMessage))
+        {
+            <MudAlert Severity="Severity.Info" Class="mt-2">
+                @StatusMessage
+            </MudAlert>
+        }
+    </div>
+</MudPaper>
+
+@code {
+    private MudFileUpload<IBrowserFile>? _fileUpload;
+    private bool IsProcessing;
+    private string StatusMessage = string.Empty;
+
+    private async Task HandleFileSelected(IBrowserFile file)
+    {
+        IsProcessing = true;
+        StatusMessage = "Reading file…";
+        StateHasChanged();
+
+        try
+        {
+            using var stream = file.OpenReadStream(long.MaxValue);
+            using var reader = new StreamReader(stream);
+            using var csv = new CsvReader(reader, new CsvConfiguration(CultureInfo.InvariantCulture)
+                {
+                    MissingFieldFound = null,
+                    HeaderValidated = null
+                });
+
+            await csv.ReadAsync();
+            csv.ReadHeader();
+            var headers = csv.HeaderRecord!;
+            var method = typeof(GenIndividualsLoader)
+                                .GetMethod(nameof(GenIndividualsLoader.InsertAsync))!;
+            var parmsInfo = method.GetParameters();
+
+            int count = 0;
+            while (await csv.ReadAsync())
+            {
+                // <-- HERE: args is object?[] so null is allowed
+                var args = new object?[parmsInfo.Length];
+
+                for (int i = 0; i < parmsInfo.Length; i++)
+                {
+                    var p = parmsInfo[i];
+                    var match = headers.FirstOrDefault(h => Sanitize(h) == p.Name);
+
+                    if (match != null)
+                    {
+                        var raw = csv.GetField(match);
+                        // Assign null or the raw string—no warnings now
+                        args[i] = string.IsNullOrWhiteSpace(raw)
+                                    ? null
+                                    : raw;
+                    }
+                    else
+                    {
+                        args[i] = null;
+                    }
+                }
+
+                // invoke your 126‐param InsertAsync(string?, …)
+                await ((Task)method.Invoke(Loader, args)!)!;
+
+                count++;
+                StatusMessage = $"Inserted {count} rows…";
+                StateHasChanged();
+            }
+
+            StatusMessage = $"Done! {count} rows inserted.";
+        }
+        catch (Exception ex)
+        {
+            StatusMessage = $"Error: {ex.Message}";
+        }
+        finally
+        {
+            IsProcessing = false;
+            StateHasChanged();
+        }
+    }
+
+    private static string Sanitize(string s)
+        => Regex.Replace(s, @"[^0-9A-Za-z_]", "");
+}

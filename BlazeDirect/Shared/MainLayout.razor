@@ -1,0 +1,75 @@
+﻿@using MudBlazor
+@using MudBlazor.Utilities
+@inject IJSRuntime JSRuntime
+@inherits LayoutComponentBase
+
+<PageTitle>BlazeDirect</PageTitle>
+<MudThemeProvider @bind-IsDarkMode="@isDarkMode" Theme="@currentTheme" />
+<MudPopoverProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<MudLayout>
+    <NavMenu />
+    <MudMainContent>
+        <MudContainer MaxWidth="MaxWidth.Large" Class="mt-16">
+            <MudPaper Class="pa-4 mb-4 d-flex align-center justify-space-between" Elevation="1">
+                <MudSwitch T="bool" @bind-Checked="@isDarkMode" Color="Color.Primary" Label="Dark Mode" Class="ma-0" />
+                <LoginDisplay />
+            </MudPaper>
+            <MudPaper Class="pa-4" Elevation="1">
+                @Body
+            </MudPaper>
+        </MudContainer>
+    </MudMainContent>
+</MudLayout>
+
+@code {
+    private bool isDarkMode;
+    private MudTheme currentTheme = new MudTheme();
+    private MudTheme lightTheme = new MudTheme
+        {
+            PaletteLight = new PaletteLight
+            {
+                Primary = "#1E88E5",
+                Secondary = "#ff4081",
+                Background = "#ffffff",
+                Surface = "#ffffff",
+                TextPrimary = "#333333",
+                TextSecondary = "rgba(51,51,51, 0.7)"
+            }
+        };
+
+    private MudTheme darkTheme = new MudTheme
+        {
+            PaletteDark = new PaletteDark
+            {
+                Black = "#27272f",
+                Background = "#32333d",
+                Surface = "#373740",
+                Primary = "#1E88E5",
+                Secondary = "#ff4081",
+                TextPrimary = "#ffffff",
+                TextSecondary = "rgba(255,255,255, 0.7)"
+            }
+        };
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var isDarkModeString = await JSRuntime.InvokeAsync<string>("localStorage.getItem", "isDarkMode");
+            isDarkMode = bool.TryParse(isDarkModeString, out var result) && result;
+            currentTheme = isDarkMode ? darkTheme : lightTheme;
+            StateHasChanged();
+        }
+    }
+
+    private async Task IsDarkModeChanged(bool newValue)
+    {
+        isDarkMode = newValue;
+        currentTheme = isDarkMode ? darkTheme : lightTheme;
+        await JSRuntime.InvokeVoidAsync("localStorage.setItem", "isDarkMode", isDarkMode);
+        StateHasChanged();
+    }
+}
