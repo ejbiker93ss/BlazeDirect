@@ -2,7 +2,7 @@
 @inherits PersonCardBase
 
 <div>
-    <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge">
+    <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Class="mb-3">
         <div class="row">
             <div class="col-md-6 float-start">
                 <h1 class="float-start">People</h1>
@@ -21,7 +21,7 @@
     <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Class="float-start mb-3">
         <div class="row">
             <div class="col-md-3 mb-3 d-inline-flex align-items-center">
-                <button class="btn btn-light" @onclick="ShowSearchPanel">
+                <button class="btn border-light-gray" @onclick="ShowSearchPanel">
                     @if(IsOpenSearchPanel)
                     {
                         <span>
