@@ -1,80 +1,10 @@
-﻿@page "/people"  
-@using BlazeDirect.Data  
+﻿@page "/people"
+@using BlazeDirect.Data
+@attribute [Authorize]
 
-<PageTitle>People</PageTitle>  
-
-<button class="btn btn-primary" style="float: right; margin-bottom: 10px;" @onclick="ShowDialog">
-   Add Person
-</button>
-
-<h1>People</h1>  
-
-
+<PageTitle>People</PageTitle>
 <div>
-   <PersonCard Person="@person" />
+    <PersonCard/>
 </div>
 
-<EditForm Model="@currentPerson" OnValidSubmit="SavePerson">
-   <DataAnnotationsValidator />
-   <ValidationSummary />
 
-   <div class="modal" tabindex="-1" style="display: @(isDialogVisible ? "block" : "none");">
-       <div class="modal-dialog">
-           <div class="modal-content">
-               <div class="modal-header">
-                   <h5 class="modal-title">@dialogTitle</h5>
-                   <button type="button" class="btn-close" @onclick="CloseDialog"></button>
-               </div>
-               <div class="modal-body">
-                   <div class="mb-3">
-                       <label for="firstName" class="form-label">First Name</label>
-                       <InputText id="firstName" class="form-control" @bind-Value="currentPerson.FirstName" />
-                   </div>
-                   <div class="mb-3">
-                       <label for="lastName" class="form-label">Last Name</label>
-                       <InputText id="lastName" class="form-control" @bind-Value="currentPerson.LastName" />
-                   </div>
-                   <div class="mb-3">
-                       <label for="address" class="form-label">Address</label>
-                       <InputText id="address" class="form-control" @bind-Value="currentPerson.Address" />
-                   </div>
-               </div>
-               <div class="modal-footer">
-                   <button type="button" class="btn btn-secondary" @onclick="CloseDialog">Cancel</button>
-                   <button type="submit" class="btn btn-primary">Save</button>
-               </div>
-           </div>
-       </div>
-   </div>
-</EditForm>
-
-@code {  
-   private Person person = new Person  
-   {  
-       FirstName = "John",  
-       LastName = "Doe",  
-       Address = "123 Main St, Springfield, USA"  
-   };  
-
-   private Person currentPerson = new Person();
-   private bool isDialogVisible = false;
-   private string dialogTitle = "Add Person";
-
-   private void ShowDialog()
-   {
-       currentPerson = new Person();
-       dialogTitle = "Add Person";
-       isDialogVisible = true;
-   }
-
-   private void CloseDialog()
-   {
-       isDialogVisible = false;
-   }
-
-   private void SavePerson()
-   {
-       // Save logic here (e.g., add to database or update list)
-       isDialogVisible = false;
-   }
-}

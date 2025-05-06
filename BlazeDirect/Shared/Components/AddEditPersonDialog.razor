@@ -1,0 +1,67 @@
+﻿@inherits AddEditPersonDialogBase
+
+<MudDialog @bind-Visible="@PersonViewModel.IsDialogVisible" Options="@dialogOptions" Class="w-100 px-5 py-2">
+    <TitleContent>
+        <h3 class="float-start">
+            @if (PersonViewModel.Id > 0)
+            {
+                <span>Update Person</span>
+            }
+            else
+            {
+                <span>Add New Person</span>
+            }
+        </h3>
+        <button type="button" class="btn-close float-end" @onclick="ClosePersonDialog"></button>
+    </TitleContent>
+    <DialogContent>
+        @if (PersonViewModel.Id > 0)
+        {
+            <MudTabs Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6 row" Class="row">
+                <MudTabPanel Text="Details">
+                    <hr />
+                    <MudText>                        
+                        <AddPersonForm PersonViewModel="PersonViewModel" UpdatePersonInfo="UpdatePersonInfo"></AddPersonForm>
+                    </MudText>
+                </MudTabPanel>
+                <MudTabPanel Text="Family" Class="col" OnClick="LoadRelationshipTable">
+                    <hr />
+                    <MudText>
+                        <button type="button" class="btn btn-primary" style="float: right; margin-bottom: 10px;" @onclick="ShowFamilyDialog">Add</button>
+                        <h4>Family Relationships</h4>
+                        @if (Relationships.Count>0)
+                        {
+                            <MudTable Items="@Relationships">
+                                <HeaderContent>
+                                <MudTh>Name</MudTh>
+                                <MudTh>Relation</MudTh>
+                            </HeaderContent>
+                            <RowTemplate>
+                                <MudTd DataLabel="Nr">@context.RelatedPerson?.FirstName @context.RelatedPerson?.LastName</MudTd>
+                                <MudTd DataLabel="Sign">@context.RelationshipType?.Name</MudTd>                       
+                            </RowTemplate>                            
+                        </MudTable>
+                        }else{
+                            <div class="text-center mt-5 pt-5">
+                                <MudIcon Icon="@Icons.Material.Filled.FamilyRestroom" Color="Color.Default" Size="Size.Small" Title="Person" />
+                                <h5>No family members</h5>
+                                <p class="text-sm text-muted-foreground">Add family relationships to this person</p>
+                            </div>
+                        }
+                        <FamilyRelationshipDialog RelationshipViewModel="RelationshipViewModel" UpdateFamilyInfo="UpdateFamilyInfo" Relationships="Relationships"></FamilyRelationshipDialog>
+                        </MudText>
+                </MudTabPanel>
+                <MudTabPanel Text="Account" Class="col">
+                    <hr />
+                    <MudText><hr />Content Three</MudText>
+                </MudTabPanel>
+            </MudTabs>
+        }
+        else
+        {
+            <AddPersonForm PersonViewModel="PersonViewModel" UpdatePersonInfo="UpdatePersonInfo"></AddPersonForm>
+        }
+
+    </DialogContent>
+</MudDialog>
+

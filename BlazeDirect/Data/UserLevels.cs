@@ -18,14 +18,6 @@ namespace BlazeDirect.Data
         public int Id { get; set; }
         public int Level { get; set; }
     }
-    public class ApplicationUser : IdentityUser
-    {
-        // Foreign key to UserLevel
-        public int UserLevelId { get; set; }
-
-        // Navigation property for the relationship
-        [ForeignKey("UserLevelId")]
-        public UserLevel? UserLevel { get; set; }
-    }
+    
 
 }

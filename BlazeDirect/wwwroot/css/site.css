@@ -66,3 +66,168 @@ a, .btn-link {
     .blazor-error-boundary::after {
         content: "An error has occurred."
     }
+.w-100px {
+    width: 1.25rem;
+}
+.w-5 {
+    width: 1.25rem;
+}
+
+.h-5 {
+    height: 1.25rem;
+}
+
+/* Style the tab */
+.tab {
+    overflow: hidden;
+    border: 1px solid #ccc;
+    background-color: #f1f1f1;
+}
+
+    /* Style the buttons inside the tab */
+    .tab a {
+        background-color: inherit;
+        float: left;
+        border: none;
+        outline: none;
+        cursor: pointer;
+        padding: 14px 16px;
+        transition: 0.3s;
+        font-size: 17px;
+        width: 50%;
+    }
+
+        /* Change background color of buttons on hover */
+        .tab button:hover {
+            background-color: #ddd;
+        }
+
+        /* Create an active/current tablink class */
+        .tab a.active {
+            background-color: #ccc;
+        }
+
+/* Style the tab content */
+.tabcontent {
+    display: none;
+    padding: 6px 12px;
+    border: 1px solid #ccc;
+    border-top: none;
+}
+
+
+/*For Person grid*/
+.grd-person {
+    float: left;
+    width: 100%;
+}
+
+.grd-person p {
+    margin: 0px;
+}
+
+.grd-person .mud-table-cell {
+    padding: 12px;
+}
+
+    .grd-person .mud-table-cell[data-label="Action"] > span {
+        display: none;
+    }
+
+.grd-action-a {
+    padding: 10px;
+    cursor: pointer;
+}
+
+    .grd-action-a:hover {
+        background-color: #efefef;
+    }
+
+.acions-list a span {
+    display: none;
+}
+
+.vertical-middle {
+    vertical-align: middle;
+    align-items: center;
+    display: flex;
+}
+
+.top-search {
+    max-width: 350px;
+}
+
+.fields-search-box {
+    border: 1px solid #dbd8d8;
+}
+
+@media only screen and (max-width: 720px) {
+    .grd-person .mud-table-cell {
+        padding: 8px;
+    }
+
+    .grd-action-a {
+        padding: 0px;
+    }
+
+    .top-search {
+        max-width: 100%;
+        margin: 0px 10px 0px 0px !important;
+    }
+    .grd-person .acions-list .mud-icon-size-small {
+        font-size: 1rem;
+    }
+}
+
+@media only screen and (max-width: 600px) {
+    .grd-person .mud-table-row {
+        border-bottom: 1px solid var(--mud-palette-table-lines) !important;
+    }
+
+        .grd-person .mud-table-row:last-child {
+            border-bottom: none !important;
+        }
+
+    .grd-person .mud-table-cell:before,
+    .grd-person .mud-table-cell[data-label="Area"],
+    .grd-person .mud-table-cell[data-label="Age"] {
+        display: none;
+    }
+
+    .grd-person .mud-table-cell[data-label="Action"] {
+        padding: 12px;
+        display: table-cell !important;
+        position: relative;
+        border: none !important;
+    }
+
+        .grd-person .mud-table-cell[data-label="Action"] > span {
+            display: block;
+        }
+
+        .grd-person .mud-table-cell[data-label="Action"] .acions-list {
+            position: absolute;
+            display: grid;
+            border: 1px solid #ebebeb;
+            width: 137px;
+            right: 10px;
+            overflow: auto;
+            top: 50px;
+            visibility: hidden;
+            background: #f1f1f1;
+        }
+
+    .grd-person .show.acions-list {
+        visibility: visible !important;
+    }
+
+      
+
+    .grd-person .grd-action-a {
+        padding: 8px;
+    }
+
+    .grd-person .show.acions-list a span {
+        display: contents;
+    }
+}

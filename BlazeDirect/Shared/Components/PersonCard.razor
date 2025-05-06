@@ -1,12 +1,163 @@
-﻿@using BlazeDirect.Data  
-@using MudBlazor  
+﻿@using BlazeDirect.Data
+@inherits PersonCardBase
 
-<MudPaper Elevation="2" Class="pa-4" Style="border-radius: 10px; width: 100%; box-sizing: border-box;">  
-   <MudText Typo="Typo.h6" GutterBottom="true">@Person.FirstName @Person.LastName</MudText>  
-   <MudText Typo="Typo.body1">@Person.Address</MudText>  
-</MudPaper>  
+<div>
+    <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge">
+        <div class="row">
+            <div class="col-md-6 float-start">
+                <h1 class="float-start">People</h1>
+            </div>
+            <div class="col-md-6 float-end d-flex justify-content-end mb-5">
+                <MudTextField @bind-Value="mainSearchString" Placeholder="Search" Adornment="Adornment.Start" Immediate="true"
+                              AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-3 mx-3 top-search "></MudTextField>
 
-@code {  
-   [Parameter]  
-   public required Person Person { get; set; }  
-}
+                <button class="btn btn-primary float-end" @onclick="(()=>ShowPersonEditDialog())">
+                    <MudIcon Icon="@Icons.Material.Filled.Add" Class="text-white" Title="Add" /> Add
+                </button>
+            </div>
+        </div>
+    </MudContainer>
+
+    <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Class="float-start mb-3">
+        <div class="row">
+            <div class="col-md-3 mb-3 d-inline-flex align-items-center">
+                <button class="btn btn-light" @onclick="ShowSearchPanel">
+                    @if(IsOpenSearchPanel)
+                    {
+                        <span>
+                            Hide Column Filters
+                        </span>
+                    }else {
+                        <span>
+                            Show Column Filters
+                        </span>
+                    }
+                </button>
+                <div class="align-items-center mx-3">
+                    <InputCheckbox class="form-check-input mx-3" @bind-Value=@ShowDeceased></InputCheckbox>
+                    <label class="form-check-label" for="flexCheckDefault">
+                        Show deceased
+                    </label>
+                </div>
+            </div>
+            @if (IsOpenSearchPanel == true)
+            {
+                <div class="col-md-6 float-start p-4 fields-search-box">
+                    <div class="row">
+                        <div class="col-sm mb-4">
+                            <label for="Name" class="form-label mb-0">Name</label>
+                            <MudTextField T="string" Class="form-control"
+                                          ValueChanged="SearchByName"
+                                          Immediate="true" />
+                        </div>
+                        <div class="col-sm mb-4">
+                            <label for="Area" class="form-label mb-0">Area</label>
+                            <MudTextField T="string"
+                                          Value="PersonSearchModel.Area"
+                                          ValueChanged="SearchByArea"
+                                          Immediate="true" />
+                        </div>
+
+                        <div class="col-sm mb-4">
+                            <label for="Age" class="form-label mb-0">Age</label>
+                            <MudTextField T="string"
+                                          Value="PersonSearchModel.Age"
+                                          ValueChanged="SearchByAge"
+                                          Immediate="true" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm mb-4">
+                            <label for="Status" class="form-label mb-0">Status</label>
+                            <MudTextField T="string"
+                                          Value="PersonSearchModel.Status"
+                                          ValueChanged="SearchByStatus"
+                                          Immediate="true" />
+                        </div>
+                        <div class="col-sm mb-4">
+                            <label for="Email" class="form-label mb-0">Email</label>
+                            <MudTextField T="string" ValueChanged="SearchByEmail" Immediate="true" />
+                        </div>
+                        <div class="col-sm mb-4">
+                            <label for="Phone" class="form-label mb-0">Phone</label>
+                            <MudTextField T="string"
+                                          Value="PersonSearchModel.Phone"
+                                          ValueChanged="SearchByPhone"
+                                          Immediate="true" />
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col-sm">
+                            <button class="btn btn-light float-end" @onclick="ClearFilter">
+                                Clear Filter
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </MudContainer>
+    <hr />
+    <MudDataGrid @ref="dataGrid" T=" Person" MultiSelection="true" Items="SearchedItems" SortMode="SortMode.Multiple" QuickFilter=_quickFilter
+                 Hideable="true" Hover="true" Class="grd-person">
+        <Columns>
+            <TemplateColumn Title="Person" Sortable="true" SortBy="x => x.Name" Class="fw-bold cell-name">
+                <CellTemplate>
+                    <div class="d-flex items-center">
+                        <span class="mr-2">
+                            <MudIcon Icon="@Icons.Material.Filled.Person" Class="text-primary" Title="Person" />
+                        </span>
+                        <div>
+                            <b>@context.Item.Name</b>
+                            <p class="text-xs text-neutral-500 min-h-[40px]">
+                                @Helper.AgeCalculator(context.Item.BirthDate) years
+                                @if (context.Item.BirthDate != null)
+                                {
+                                    <span class="ml-1">
+                                        •Born: @Convert.ToDateTime(context.Item.BirthDate).ToString("MMMM dd, yyyy")
+                                    </span>
+                                }
+                            </p>
+                        </div>
+                    </div>
+                </CellTemplate>
+            </TemplateColumn>
+            <PropertyColumn Property="x => x.Address" Class="fw-bold" Title="Area" CellClass="cell-area" Sortable="true" Filterable="false">
+            </PropertyColumn>
+            <TemplateColumn Sortable="true" SortBy="x => Helper.AgeCalculator(x.BirthDate)" Title="Age" Class="fw-bold cell-age">
+                <CellTemplate>
+                    @Helper.AgeCalculator(context.Item.BirthDate) years
+                </CellTemplate>
+            </TemplateColumn>
+            <TemplateColumn Title="Action" Class="fw-bold">
+                <CellTemplate>
+                    <span class="float-end" @onclick="@(() => ShowGridAction(context.Item))">...</span>
+                    <div class="acions-list @(ActionIndex==context.Item.Id?"show":"")">
+                        <a class="grd-action-a">
+                            <MudIcon Icon="@Icons.Material.Filled.RemoveRedEye" Color="Color.Primary" Size="Size.Small" Title="Person" />
+                            <span>View Details</span>
+                        </a>
+                        <a class="grd-action-a" @onclick="@(() => ShowPersonEditDialog(context.Item))">
+                            <MudIcon Icon="@Icons.Material.Filled.Edit" Color="Color.Default" Size="Size.Small" Title="Person" />
+                            <span>Edit</span>
+                        </a>
+                        <a class="grd-action-a">
+                            <MudIcon Icon="@Icons.Material.Filled.FamilyRestroom" Color="Color.Tertiary" Size="Size.Small" Title="Person" />
+                            <span>Family Tree</span>
+                        </a>
+                    </div>
+                </CellTemplate>
+            </TemplateColumn>
+        </Columns>
+        @*  <PagerContent>
+        <MudDataGridPager T="Person" />
+    </PagerContent> *@
+    </MudDataGrid>
+
+</div>
+<AddEditPersonDialog PersonViewModel="PersonViewModel" CloseAddEditPersonDialog="CloseAddEditPersonDialog"></AddEditPersonDialog>
+
+
+
+
+

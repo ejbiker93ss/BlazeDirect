@@ -14,7 +14,7 @@ namespace BlazeDirect.Data
         public async Task<List<Person>> GetPeopleAsync()
         {
             return await _context.People
-                .Where(p => p.IsActive) // Assuming you want only active people
+               // .Where(p => p.IsActive) // Assuming you want only active people
                 .ToListAsync();
         }
     }

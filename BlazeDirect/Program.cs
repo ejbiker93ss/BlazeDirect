@@ -1,5 +1,6 @@
 using BlazeDirect.Areas.Identity;
 using BlazeDirect.Data;
+using BlazeDirect.Data.Services;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -18,17 +19,19 @@ namespace BlazeDirect
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(connectionString));
             builder.Services.AddDatabaseDeveloperPageExceptionFilter();
-            builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+            builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddRoles<IdentityRole>() // Added role support
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             builder.Services.AddRazorPages();
             builder.Services.AddServerSideBlazor();
-            builder.Services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<IdentityUser>>();
+            builder.Services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<ApplicationUser>>();
             builder.Services.AddSingleton<WeatherForecastService>();
             builder.Services.AddMudServices();
 
             builder.Services.AddTransient<GenIndividualsLoader>(sp => new GenIndividualsLoader(connectionString));
-
+            builder.Services.AddScoped<IPersonService, PersonService>();
+            builder.Services.AddScoped<IChurchService, ChurchService>();
+            builder.Services.AddScoped<IRelationshipService, RelationshipService>();
             var app = builder.Build();
 
             // Ensure roles are created

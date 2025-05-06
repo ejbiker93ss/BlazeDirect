@@ -1,0 +1,118 @@
+﻿@inherits AddPersonFormBase
+
+<EditForm Model="@PersonViewModel" OnValidSubmit="SavePersonAsync">
+    <DataAnnotationsValidator />
+    <input type="hidden" @bind-value="PersonViewModel.UserId" />
+    <input type="hidden" @bind-value="PersonViewModel.Id" />
+
+    <div class="row mb-4">
+        <div class="col-sm">
+            <label for="firstName" class="form-label">First Name</label>
+            <InputText id="firstName" class="form-control" @bind-Value="PersonViewModel.FirstName" />
+        </div>
+        <div class="col-sm">
+            <label for="middleName" class="form-label">Middle Name</label>
+            <InputText id="middleName" class="form-control" @bind-Value="PersonViewModel.MiddleName" />
+        </div>
+        <div class="col-sm">
+            <label for="lastName" class="form-label">Last Name</label>
+            <InputText id="lastName" class="form-control" @bind-Value="PersonViewModel.LastName" />
+        </div>
+    </div>
+    <div class="row mb-4">
+        <div class="col-sm">
+            <label for="nickname" class="form-label">Nick Name</label>
+            <InputText id="nickname" class="form-control" @bind-Value="PersonViewModel.Nickname" />
+        </div>
+        <div class="col-sm">
+            <label for="phone" class="form-label">Phone</label>
+            <InputText id="phone" class="form-control" @bind-Value="PersonViewModel.Phone" />
+        </div>
+        <div class="col-sm">
+            <label for="email" class="form-label">Email</label>
+            <InputText id="email" class="form-control" @bind-Value="PersonViewModel.Email" />
+        </div>
+    </div>
+    <div class="row mb-4">
+        <div class="col-sm">
+            <label for="address" class="form-label">Address</label>
+            <InputText id="address" class="form-control" @bind-Value="PersonViewModel.Address" />
+        </div>
+    </div>
+    <div class="row mb-5">
+        <div class="col-sm">
+            <label for="church" class="form-label">Church</label>
+            @if (PersonViewModel.ChurchId == 0 && PersonViewModel.Churches?.Count>0)
+            {
+                PersonViewModel.ChurchId = PersonViewModel.Churches.FirstOrDefault().Id;
+            }
+            <MudSelect @bind-Value="PersonViewModel.ChurchId">
+                @foreach (var church in PersonViewModel.Churches)
+                {
+                    <MudSelectItem Value="@church.Id">@church.Name</MudSelectItem>
+                }
+            </MudSelect>
+        </div>
+        <div class="col-sm">
+            <label for="Status" class="form-label">Status</label>
+            <MudSelect @bind-Value="PersonViewModel.IsActive">
+                <MudSelectItem Value="1">Active</MudSelectItem>
+                <MudSelectItem Value="0">InActive</MudSelectItem>
+            </MudSelect>
+        </div>
+        <div class="col-sm">
+            <label for="gender" class="form-label">
+                Genders
+            </label>
+            <MudSelect @bind-Value="PersonViewModel.IsMale">
+                <MudSelectItem Value="1">Male</MudSelectItem>
+                <MudSelectItem Value="0">Female</MudSelectItem>
+            </MudSelect>
+        </div>
+    </div>
+    <div class="row mb-5">
+        <div class="col-sm">
+            <label for="BirthDate" class="form-label">BirthDate</label>
+            <InputDate id="BirthDate" class="form-control" @bind-Value=@PersonViewModel.BirthDate />
+        </div>
+        <div class="col-sm">
+            <label for="BaptismDate" class="form-label">BaptismDate</label>
+            <InputDate id="BaptismDate" class="form-control" @bind-Value=@PersonViewModel.BaptismDate />
+        </div>
+        <div class="col-sm">
+            <label for="BirthPlace" class="form-label">
+                Birth Place
+            </label>
+            <InputText id="BirthPlace" class="form-control" @bind-Value="PersonViewModel.BirthPlace" />
+        </div>
+    </div>
+    <div class="row mb-5">
+        <div class="col-sm">
+            <label for="DeathDate" class="form-label">DeathDate</label>
+            <InputDate id="DeathDate" class="form-control" @bind-Value=@PersonViewModel.DeathDate />
+        </div>
+        <div class="col-sm">
+            <label for="DeathPlace" class="form-label">DeathPlace</label>
+            <InputText id="DeathPlace" class="form-control" @bind-Value="PersonViewModel.DeathPlace" />
+        </div>
+    </div>
+    <div class="row mb-4">
+        <div class="col-sm">
+            <label for="Note" class="form-label">Note</label>
+            <InputTextArea id="Note" mu class="form-control" @bind-Value="PersonViewModel.Notes" />
+        </div>
+    </div>
+    <div class="row mb-5 float-end">
+        @* <button type="button" class="btn btn-secondary w-25" @onclick="CloseDialog">Cancel</button> *@
+        <button type="submit" class="btn btn-primary text-center " style="width:150px;">
+            @if (PersonViewModel.Id > 0)
+            {
+                <span>Update Person</span>
+            }
+            else
+            {
+                <span>Add Person</span>
+            }
+        </button>
+    </div>
+</EditForm>

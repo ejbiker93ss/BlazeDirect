@@ -4,6 +4,7 @@ using BlazeDirect.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BlazeDirect.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250504042942_CustomIdentityUser")]
+    partial class CustomIdentityUser
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -173,17 +176,11 @@ namespace BlazeDirect.Migrations
                     b.Property<DateTime?>("BirthDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("BirthPlace")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("ChurchId")
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("DeathDate")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("DeathPlace")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Email")
                         .HasColumnType("nvarchar(max)");
@@ -201,13 +198,13 @@ namespace BlazeDirect.Migrations
                     b.Property<string>("IdMother")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool?>("IsActive")
+                    b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
                     b.Property<bool>("IsMale")
                         .HasColumnType("bit");
 
-                    b.Property<DateTime?>("JoinedDate")
+                    b.Property<DateTime>("JoinedDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("LastName")
@@ -235,8 +232,8 @@ namespace BlazeDirect.Migrations
                     b.Property<string>("Uid")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int?>("UserId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 

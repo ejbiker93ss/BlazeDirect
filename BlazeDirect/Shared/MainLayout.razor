@@ -2,22 +2,20 @@
 @using MudBlazor.Utilities
 @inject IJSRuntime JSRuntime
 @inherits LayoutComponentBase
-
 <PageTitle>BlazeDirect</PageTitle>
 <MudThemeProvider @bind-IsDarkMode="@isDarkMode" Theme="@currentTheme" />
 <MudPopoverProvider />
 <MudDialogProvider />
 <MudSnackbarProvider />
-
 <MudLayout>
-    <NavMenu />
+    <NavMenu />    
     <MudMainContent>
-        <MudContainer MaxWidth="MaxWidth.Large" Class="mt-16">
-            <MudPaper Class="pa-4 mb-4 d-flex align-center justify-space-between" Elevation="1">
-                <MudSwitch T="bool" @bind-Checked="@isDarkMode" Color="Color.Primary" Label="Dark Mode" Class="ma-0" />
-                <LoginDisplay />
-            </MudPaper>
-            <MudPaper Class="pa-4" Elevation="1">
+        <MudSwitch T="bool" @bind-Checked="@isDarkMode" Color="Color.Primary" Label="Dark Mode" Class="ma-0 float-end" />
+        <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Class="mt-16">
+           @*  <MudPaper Class="pa-4 mb-4 d-flex align-center justify-space-between" Elevation="1">                
+                 <LoginDisplay /> 
+            </MudPaper> *@
+            <MudPaper Class="pa-4 float-start w-100" Elevation="1">
                 @Body
             </MudPaper>
         </MudContainer>

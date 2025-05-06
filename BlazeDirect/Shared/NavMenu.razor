@@ -1,9 +1,21 @@
 ﻿@using MudBlazor
-
+@inject AuthenticationStateProvider authenticationStateProvider
+@{
+    var authstate = authenticationStateProvider.GetAuthenticationStateAsync().Result;
+    var user = authstate.User;
+}
 <MudAppBar Color="Color.Primary" Elevation="4">
-    <MudText Typo="Typo.h6" Class="ml-4">BlazeDirect</MudText>
-    <MudSpacer />
     <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.End" OnClick="ToggleNavMenu" />
+    <MudText Typo="Typo.h6" Class="ml-4">BlazeDirect</MudText>
+    <MudSpacer />    
+     @if (user?.Identity?.IsAuthenticated==true){   
+        <MudMenu Icon="@Icons.Custom.Brands.MudBlazor" Class="float-end">
+            <MudMenuItem Class="px-3 text-center text-black">
+                @user.Identity.Name
+            </MudMenuItem>       
+            <MudLink Href="Identity/Account/Logout" Class="px-5 text-center text-black">Log out</MudLink>
+        </MudMenu>
+    }
 </MudAppBar>
 
 <MudDrawer Open="@(!isNavMenuCollapsed)" Anchor="Anchor.Left" Elevation="2" Width="260px">
@@ -26,6 +38,7 @@
 
 @code {
     private bool isNavMenuCollapsed = true;
+    private string name;
 
     private void ToggleNavMenu()
     {
