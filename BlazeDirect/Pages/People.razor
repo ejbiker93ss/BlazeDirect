@@ -1,10 +1,31 @@
 ﻿@page "/people"
 @using BlazeDirect.Data
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Identity
+@inject AuthenticationStateProvider AuthStateProvider
+@inject UserManager<ApplicationUser> UserManager
 @attribute [Authorize]
 
 <PageTitle>People</PageTitle>
 <div>
-    <PersonCard/>
+    <PersonCard User="User" />
 </div>
 
 
+@code {
+    [Parameter]
+    public ApplicationUser User { get; set; }
+    private bool IsEditor { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+
+        var appUser = await UserManager.GetUserAsync(user);
+        User = appUser;
+
+
+    }
+}

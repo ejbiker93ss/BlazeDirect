@@ -14,7 +14,9 @@ namespace BlazeDirect.Shared.Components
         protected IPersonService PersonService { get; set; }
         [Inject]
         protected IChurchService ChurchService { get; set; }
-
+        [Parameter]
+        public required ApplicationUser User { get; set; }
+        public bool IsEditor { get; set; }
         public PersonViewModel PersonViewModel = new PersonViewModel();
         protected List<Church> Churches = new List<Church>();
         protected List<Person> Peoples = new List<Person>();
@@ -23,6 +25,7 @@ namespace BlazeDirect.Shared.Components
 
         protected override async Task OnInitializedAsync()
         {
+            IsEditor = User.UserLevelID > 1;
             await base.OnInitializedAsync();
         }
         protected override async void OnAfterRender(bool firstRender)

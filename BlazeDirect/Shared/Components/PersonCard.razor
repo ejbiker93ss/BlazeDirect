@@ -9,7 +9,7 @@
             </div>
             <div class="col-md-6 float-end d-flex justify-content-end mb-5">
                 <MudTextField @bind-Value="mainSearchString" Placeholder="Search" Adornment="Adornment.Start" Immediate="true"
-                              AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-3 mx-3 top-search "></MudTextField>
+                AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-3 mx-3 top-search "></MudTextField>
 
                 <button class="btn btn-primary float-end" @onclick="(()=>ShowPersonEditDialog())">
                     <MudIcon Icon="@Icons.Material.Filled.Add" Class="text-white" Title="Add" /> Add
@@ -47,32 +47,32 @@
                         <div class="col-sm mb-4">
                             <label for="Name" class="form-label mb-0">Name</label>
                             <MudTextField T="string" Class="form-control"
-                                          ValueChanged="SearchByName"
-                                          Immediate="true" />
+                            ValueChanged="SearchByName"
+                            Immediate="true" />
                         </div>
                         <div class="col-sm mb-4">
                             <label for="Area" class="form-label mb-0">Area</label>
                             <MudTextField T="string"
-                                          Value="PersonSearchModel.Area"
-                                          ValueChanged="SearchByArea"
-                                          Immediate="true" />
+                            Value="PersonSearchModel.Area"
+                            ValueChanged="SearchByArea"
+                            Immediate="true" />
                         </div>
 
                         <div class="col-sm mb-4">
                             <label for="Age" class="form-label mb-0">Age</label>
                             <MudTextField T="string"
-                                          Value="PersonSearchModel.Age"
-                                          ValueChanged="SearchByAge"
-                                          Immediate="true" />
+                            Value="PersonSearchModel.Age"
+                            ValueChanged="SearchByAge"
+                            Immediate="true" />
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-sm mb-4">
                             <label for="Status" class="form-label mb-0">Status</label>
                             <MudTextField T="string"
-                                          Value="PersonSearchModel.Status"
-                                          ValueChanged="SearchByStatus"
-                                          Immediate="true" />
+                            Value="PersonSearchModel.Status"
+                            ValueChanged="SearchByStatus"
+                            Immediate="true" />
                         </div>
                         <div class="col-sm mb-4">
                             <label for="Email" class="form-label mb-0">Email</label>
@@ -81,9 +81,9 @@
                         <div class="col-sm mb-4">
                             <label for="Phone" class="form-label mb-0">Phone</label>
                             <MudTextField T="string"
-                                          Value="PersonSearchModel.Phone"
-                                          ValueChanged="SearchByPhone"
-                                          Immediate="true" />
+                            Value="PersonSearchModel.Phone"
+                            ValueChanged="SearchByPhone"
+                            Immediate="true" />
                         </div>
                     </div>
                     <div class="row mt-2">
@@ -99,7 +99,7 @@
     </MudContainer>
     <hr />
     <MudDataGrid @ref="dataGrid" T=" Person" MultiSelection="true" Items="SearchedItems" SortMode="SortMode.Multiple" QuickFilter=_quickFilter
-                 Hideable="true" Hover="true" Class="grd-person">
+    Hideable="true" Hover="true" Class="grd-person">
         <Columns>
             <TemplateColumn Title="Person" Sortable="true" SortBy="x => x.Name" Class="fw-bold cell-name">
                 <CellTemplate>
@@ -137,10 +137,13 @@
                             <MudIcon Icon="@Icons.Material.Filled.RemoveRedEye" Color="Color.Primary" Size="Size.Small" Title="Person" />
                             <span>View Details</span>
                         </a>
-                        <a class="grd-action-a" @onclick="@(() => ShowPersonEditDialog(context.Item))">
-                            <MudIcon Icon="@Icons.Material.Filled.Edit" Color="Color.Default" Size="Size.Small" Title="Person" />
-                            <span>Edit</span>
-                        </a>
+                        @if (IsEditor)
+                        {
+                            <a class="grd-action-a" @onclick="@(() => ShowPersonEditDialog(context.Item))">
+                                <MudIcon Icon="@Icons.Material.Filled.Edit" Color="Color.Default" Size="Size.Small" Title="Person" />
+                                <span>Edit</span>
+                            </a>
+                        }
                         <a class="grd-action-a">
                             <MudIcon Icon="@Icons.Material.Filled.FamilyRestroom" Color="Color.Tertiary" Size="Size.Small" Title="Person" />
                             <span>Family Tree</span>

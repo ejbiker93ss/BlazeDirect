@@ -33,6 +33,7 @@ namespace BlazeDirect
             builder.Services.AddScoped<IChurchService, ChurchService>();
             builder.Services.AddScoped<IRelationshipService, RelationshipService>();
             builder.Services.AddScoped<IUserService, UserService>();
+            builder.Services.AddScoped<IUserLevelService, UserLevelService>();
 
             var app = builder.Build();
 

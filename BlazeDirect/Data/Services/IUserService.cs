@@ -9,7 +9,7 @@ namespace BlazeDirect.Data.Services
 
         // Method to update a user  
         Task<bool> LinkPersonToUser(ApplicationUser user);
-
+        Task<bool> UpdateUserAsync(ApplicationUser user);
         // Method to retrieve users by PersonID
         Task<List<ApplicationUser>> GetUsersByPersonIdAsync(int personId);
     }
@@ -21,10 +21,28 @@ namespace BlazeDirect.Data.Services
         {
             _dbContext = dbContext;
         }
+        public async Task<bool> UpdateUserAsync(ApplicationUser user)
+        {
+            // load the tracked entity
+            var existing = await _dbContext.Users.FindAsync(user.Id);
+            if (existing == null)
+                return false;
+
+            // copy over only the fields you want to allow editing
+            existing.FirstName = user.FirstName;
+            existing.LastName = user.LastName;
+            existing.UserLevelID = user.UserLevelID;
+
+            // commit
+            await _dbContext.SaveChangesAsync();
+            return true;
+        }
 
         public async Task<List<ApplicationUser>> GetUsersAsync()
         {
-            return await _dbContext.Users.ToListAsync();
+            return await _dbContext.Users
+                .Include(u => u.UserLevel)
+                .ToListAsync();
         }
 
         public async Task<bool> LinkPersonToUser(ApplicationUser user)

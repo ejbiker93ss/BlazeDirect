@@ -8,9 +8,9 @@
 <MudAppBar Color="Color.Primary" Elevation="4">
     <!-- Hamburger toggle back in place -->
     <MudIconButton Icon="@Icons.Material.Filled.Menu"
-                   Color="Color.Inherit"
-                   Edge="Edge.Start"
-                   OnClick="ToggleNavMenu" />
+    Color="Color.Inherit"
+    Edge="Edge.Start"
+    OnClick="ToggleNavMenu" />
 
     <MudText Typo="Typo.h6" Class="ml-4">BlazeDirect</MudText>
     <MudSpacer />
@@ -43,10 +43,16 @@
                 My Family
             </MudNavLink>
         }
-
-        <MudNavLink Href="upload-individuals-mud" Icon="@Icons.Material.Filled.Upload">
-            Upload Individuals
-        </MudNavLink>
+        @if(IsAdmin)
+        {
+            <MudNavLink Href="upload-individuals-mud" Icon="@Icons.Material.Filled.Upload">
+                Upload Individuals
+            </MudNavLink>
+            <MudNavLink Href="Users" Icon="@Icons.Material.Filled.AdminPanelSettings">
+                Users
+            </MudNavLink>
+        }
+        
     </MudNavMenu>
 </MudDrawer>
 
@@ -55,6 +61,7 @@
     private bool isAuthenticated;
     private bool showMyFamilyLink;
     private string? userName;
+    private bool IsAdmin { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -68,6 +75,7 @@
             var appUser = await UserManager.GetUserAsync(user);
             showMyFamilyLink = appUser?.PersonID > 0;
             userName = user.Identity?.Name;
+            IsAdmin = appUser.UserLevelID > 2;
         }
     }
 

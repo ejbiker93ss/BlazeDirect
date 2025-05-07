@@ -1,0 +1,68 @@
+﻿@using BlazeDirect.Data
+@using BlazeDirect.Data.Models
+@using Microsoft.AspNetCore.Components
+@using MudBlazor
+
+<MudDialogTitle Class="px-4 pt-4">Edit User</MudDialogTitle>
+
+<MudDialogContent Class="px-4">
+  <MudForm @ref="form" Model="User" OnValidSubmit="Submit">
+    <MudGrid GutterSize="3">
+      <MudItem xs="12" sm="6">
+        <MudTextField @bind-Value="User.FirstName"
+                      Label="First Name"
+                      Variant="Variant.Outlined"
+                      Required="true"
+                      FullWidth="true" />
+      </MudItem>
+      <MudItem xs="12" sm="6">
+        <MudTextField @bind-Value="User.LastName"
+                      Label="Last Name"
+                      Variant="Variant.Outlined"
+                      Required="true"
+                      FullWidth="true" />
+      </MudItem>
+      <MudItem xs="12">
+        <MudSelect T="int"
+                   @bind-Value="User.UserLevelID"
+                   Label="User Level"
+                   Variant="Variant.Outlined"
+                   Required="true"
+                   FullWidth="true">
+          @foreach (var lvl in UserLevels)
+          {
+            <MudSelectItem Value="lvl.Id">@lvl.Level</MudSelectItem>
+          }
+        </MudSelect>
+      </MudItem>
+    </MudGrid>
+  </MudForm>
+</MudDialogContent>
+
+<MudDialogActions Class="px-4 pb-4 d-flex justify-content-end">
+  <MudButton Variant="Variant.Text"
+             OnClick="Cancel">
+    Cancel
+  </MudButton>
+  <MudButton ButtonType="ButtonType.Submit"
+             OnClick="Submit"
+             Disabled="@(form?.IsValid != true)"
+             Variant="Variant.Filled"
+             Color="Color.Primary"
+             Class="ms-2">
+    Save
+  </MudButton>
+</MudDialogActions>
+
+
+
+@code {
+    private MudForm form;
+
+    [CascadingParameter] public IMudDialogInstance MudDialog { get; set; }
+    [Parameter]          public ApplicationUser User { get; set; }
+    [Parameter]          public List<UserLevel> UserLevels { get; set; }
+
+    void Cancel() => MudDialog.Cancel();
+    void Submit() => MudDialog.Close(DialogResult.Ok(User));
+}

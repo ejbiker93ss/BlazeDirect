@@ -1,0 +1,120 @@
+﻿@page "/Users"
+@using BlazeDirect.Data
+@using BlazeDirect.Data.Models
+@using BlazeDirect.Data.Services
+@using MudBlazor
+
+@inject IUserService UserService
+@inject IUserLevelService UserLevelService
+@inject IDialogService DialogService
+@inject ISnackbar Snackbar
+
+<MudPaper Class="pa-4">
+    <MudStack Row="true" AlignItems="AlignItems.Center">
+        <MudText Typo="Typo.h5">Manage Users</MudText>
+        <MudSpacer />
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="AddUser">
+            <MudIcon Icon="@Icons.Material.Filled.Add" /> Add User
+        </MudButton>
+    </MudStack>
+
+    <MudTable Items="users" Hover="true" Striped="true" Class="mt-4">
+        <HeaderContent>
+            <MudTh>First Name</MudTh>
+            <MudTh>Last Name</MudTh>
+            <MudTh>User Level</MudTh>
+            <MudTh></MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="First Name">@context.FirstName</MudTd>
+            <MudTd DataLabel="Last Name">@context.LastName</MudTd>
+            <MudTd DataLabel="User Level">@context.UserLevel?.Level</MudTd>
+            <MudTd>
+                <MudIconButton Icon="@Icons.Material.Filled.Edit"
+                               Color="Color.Primary"
+                               OnClick="() => EditUser(context)" />
+            </MudTd>
+        </RowTemplate>
+    </MudTable>
+</MudPaper>
+
+@code {
+    private List<ApplicationUser> users = new();
+    private List<UserLevel> userLevels = new();
+    private ApplicationUser editingUser;
+
+    protected override async Task OnInitializedAsync()
+    {
+        users = await UserService.GetUsersAsync();
+        userLevels = await UserLevelService.GetUserLevelsAsync();
+    }
+
+    private async Task AddUser()
+    {
+        editingUser = new ApplicationUser();
+        await ShowEditDialog("Add New User");
+    }
+
+    private async Task EditUser(ApplicationUser u)
+    {
+        // clone so the list isn't mutated until save
+        editingUser = new ApplicationUser
+            {
+                Id = u.Id,
+                FirstName = u.FirstName,
+                LastName = u.LastName,
+                UserLevelID = u.UserLevelID
+            };
+        await ShowEditDialog("Edit User");
+    }
+
+    private async Task ShowEditDialog(string title)
+    {
+        var parameters = new DialogParameters
+            {
+                ["User"] = editingUser,
+                ["UserLevels"] = userLevels
+            };
+        var options = new DialogOptions
+            {
+                CloseButton = true,
+                MaxWidth = MaxWidth.Small,
+                FullWidth = true
+            };
+
+        var dialog = DialogService.Show<EditUserDialog>(
+            title,
+            parameters: parameters,
+            options: options
+        );
+
+        var result = await dialog.Result;
+
+        if (!result.Canceled && result.Data is ApplicationUser usr)
+        {
+            bool ok;
+
+            if (string.IsNullOrEmpty(usr.Id))
+            {
+                // implement CreateUserAsync if you want "Add" to work:
+                // ok = await UserService.CreateUserAsync(usr);
+                Snackbar.Add("CreateUserAsync(...) not implemented yet", Severity.Warning);
+                return;
+            }
+            else
+            {
+                ok = await UserService.UpdateUserAsync(usr);
+            }
+
+            if (ok)
+            {
+                Snackbar.Add("Saved successfully", Severity.Success);
+                users = await UserService.GetUsersAsync();
+            }
+            else
+            {
+                Snackbar.Add("Save failed", Severity.Error);
+            }
+        }
+    }
+}
