@@ -3,19 +3,19 @@
 
 <h3>Link Person to User</h3>
 
-<MudForm Model="LinkModel" @ref="form" OnValidSubmit="HandleSubmit">
+<MudForm @ref="form" OnValidSubmit="HandleSubmit">
 
     @* — LIST OF ALREADY LINKED USERS *@
     @if (LinkedUsers.Any())
     {
         <MudText Typo="Typo.h6" GutterBottom="true">Already Linked Users</MudText>
-        @foreach (var u in LinkedUsers)
+        @foreach (var user in LinkedUsers)
         {
             <MudPaper Class="d-flex align-items-center justify-space-between p-2 mb-2">
-                <MudText>@u.Email</MudText>
+                <MudText>@user.Email</MudText>
                 <MudIconButton Icon="@Icons.Material.Filled.Delete"
                                Color="Color.Error"
-                               OnClick="() => Unlink(u)" />
+                               OnClick="() => Unlink(user.Id)" />
             </MudPaper>
         }
         <MudDivider Class="my-4" />
@@ -23,21 +23,22 @@
 
     @* — AUTOCOMPLETE TO LINK A NEW USER *@
     <MudAutocomplete T="ApplicationUser"
+                     Label="Search and Select User"
                      @bind-Value="SelectedUser"
                      SearchFunc="SearchUsersAsync"
-                     ToStringFunc="@(u => u?.Email ?? string.Empty)"
+                     ToStringFunc="u => u?.Email ?? string.Empty"
                      CoerceText="true"
-                     MinCharacters="1"
                      Clearable="true"
-                     Placeholder="Type name or email…"
-                     Adornment="Adornment.Start"
-                     AdornmentIcon="@Icons.Material.Filled.Search" />
+                     MinCharacters="1"
+                     Placeholder="Type name or email…" />
 
     <MudButton ButtonType="ButtonType.Submit"
                Variant="Variant.Filled"
                Color="Color.Primary"
+               Disabled="SelectedUser == null"
                Class="mt-4"
-               OnClick="HandleSubmit">
+               onclick="HandleSubmit">
+               
         Link User
     </MudButton>
 </MudForm>
@@ -46,74 +47,54 @@
     [Parameter] public int PersonId { get; set; }
 
     private MudForm form = null!;
-    private LinkPersonToUserModel LinkModel = new();
     private List<ApplicationUser> Users = new();
     private List<ApplicationUser> LinkedUsers = new();
-    private ApplicationUser? _selectedUser;
-    private ApplicationUser? SelectedUser
-    {
-        get => _selectedUser;
-        set
-        {
-            if (_selectedUser != value)
-            {
-                _selectedUser = value;
-                LinkModel.UserId = value?.Id ?? string.Empty;
-            }
-        }
-    }
+    private ApplicationUser? SelectedUser;
 
     [Inject] private IUserService UserService { get; set; } = default!;
 
     protected override async Task OnInitializedAsync()
     {
         Users = await UserService.GetUsersAsync();
-        LinkModel.PersonId = PersonId;
         RefreshLinkedUsers();
     }
 
     private void RefreshLinkedUsers()
         => LinkedUsers = Users.Where(u => u.PersonID == PersonId).ToList();
 
-    private Task<IEnumerable<ApplicationUser>> SearchUsersAsync(string searchText, CancellationToken cancellationToken)
+    private Task<IEnumerable<ApplicationUser>> SearchUsersAsync(string text, CancellationToken _)
     {
-        if (string.IsNullOrWhiteSpace(searchText))
-            return Task.FromResult<IEnumerable<ApplicationUser>>(Users);
-
-        var results = Users
-            .Where(u => u.Email?.Contains(searchText, StringComparison.OrdinalIgnoreCase) == true)
-            .ToList();
-
-        return Task.FromResult<IEnumerable<ApplicationUser>>(results);
+        var list = string.IsNullOrWhiteSpace(text)
+            ? Users
+            : Users.Where(u => u.Email?.Contains(text, StringComparison.OrdinalIgnoreCase) == true).ToList();
+        return Task.FromResult<IEnumerable<ApplicationUser>>(list);
     }
 
     private async Task HandleSubmit()
     {
-        if (!form.IsValid || _selectedUser is null)
+        if (!form.IsValid || SelectedUser is null)
             return;
 
-        _selectedUser.PersonID = PersonId;
-        await UserService.LinkPersonToUser(_selectedUser);
+        SelectedUser.PersonID = PersonId;
+        await UserService.LinkPersonToUser(SelectedUser);
+        await ReloadAsync();
+    }
 
-        // clear selection & refresh
-        _selectedUser = null;
+    private async Task Unlink(string userId)
+    {
+        var user = Users.FirstOrDefault(u => u.Id == userId);
+        if (user == null) return;
+
+        user.PersonID = 0;
+        await UserService.LinkPersonToUser(user);
+        await ReloadAsync();
+    }
+
+    private async Task ReloadAsync()
+    {
+        SelectedUser = null;
         Users = await UserService.GetUsersAsync();
         RefreshLinkedUsers();
         form.ResetValidation();
-    }
-
-    private async Task Unlink(ApplicationUser user)
-    {
-        user.PersonID = 0;
-        await UserService.LinkPersonToUser(user);
-
-        Users = await UserService.GetUsersAsync();
-        RefreshLinkedUsers();
-    }
-
-    private class LinkPersonToUserModel
-    {
-        public int PersonId { get; set; }
-        public string UserId { get; set; } = string.Empty;
     }
 }
