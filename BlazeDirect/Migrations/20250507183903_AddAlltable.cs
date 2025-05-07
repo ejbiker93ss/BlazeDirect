@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace BlazeDirect.Migrations
 {
     /// <inheritdoc />
-    public partial class UpdateAllTables : Migration
+    public partial class AddAlltable : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

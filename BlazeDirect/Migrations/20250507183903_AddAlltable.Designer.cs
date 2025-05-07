@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BlazeDirect.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250507143758_UpdateAllTables")]
-    partial class UpdateAllTables
+    [Migration("20250507183903_AddAlltable")]
+    partial class AddAlltable
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
