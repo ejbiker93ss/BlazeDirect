@@ -16,6 +16,7 @@ namespace BlazeDirect.Data
         public DbSet<RelationshipType> RelationshipTypes { get; set; }
         public DbSet<Place> Places { get; set; }
         public DbSet<PersonPlaceType> PersonPlaceTypes { get; set; }
+        public DbSet<UserLevel> UserLevels { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

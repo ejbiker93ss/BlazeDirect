@@ -32,6 +32,8 @@ namespace BlazeDirect
             builder.Services.AddScoped<IPersonService, PersonService>();
             builder.Services.AddScoped<IChurchService, ChurchService>();
             builder.Services.AddScoped<IRelationshipService, RelationshipService>();
+            builder.Services.AddScoped<IUserService, UserService>();
+
             var app = builder.Build();
 
             // Ensure roles are created

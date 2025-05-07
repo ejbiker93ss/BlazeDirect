@@ -1,19 +1,25 @@
-﻿@using MudBlazor
-@inject AuthenticationStateProvider authenticationStateProvider
-@{
-    var authstate = authenticationStateProvider.GetAuthenticationStateAsync().Result;
-    var user = authstate.User;
-}
+﻿@using BlazeDirect.Data
+@using MudBlazor
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Identity
+@inject AuthenticationStateProvider AuthStateProvider
+@inject UserManager<ApplicationUser> UserManager
+
 <MudAppBar Color="Color.Primary" Elevation="4">
-    <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.End" OnClick="ToggleNavMenu" />
+    <!-- Hamburger toggle back in place -->
+    <MudIconButton Icon="@Icons.Material.Filled.Menu"
+                   Color="Color.Inherit"
+                   Edge="Edge.Start"
+                   OnClick="ToggleNavMenu" />
+
     <MudText Typo="Typo.h6" Class="ml-4">BlazeDirect</MudText>
-    <MudSpacer />    
-     @if (user?.Identity?.IsAuthenticated==true){   
-        <MudMenu Icon="@Icons.Custom.Brands.MudBlazor" Class="float-end">
-            <MudMenuItem Class="px-3 text-center text-black">
-                @user.Identity.Name
-            </MudMenuItem>       
-            <MudLink Href="Identity/Account/Logout" Class="px-5 text-center text-black">Log out</MudLink>
+    <MudSpacer />
+
+    @if (isAuthenticated)
+    {
+        <MudMenu Icon="@Icons.Material.Filled.AccountCircle" Class="ml-auto">
+            <MudMenuItem>@userName</MudMenuItem>
+            <MudMenuItem Href="Identity/Account/Logout">Log out</MudMenuItem>
         </MudMenu>
     }
 </MudAppBar>
@@ -29,19 +35,41 @@
         <MudNavLink Href="fetchdata" Icon="@Icons.Material.Filled.Celebration">
             Celebrations
         </MudNavLink>
+
+        @* only show “My Family” if PersonID > 0 *@
+        @if (showMyFamilyLink)
+        {
+            <MudNavLink Href="MyFamily" Icon="@Icons.Material.Filled.Group">
+                My Family
+            </MudNavLink>
+        }
+
         <MudNavLink Href="upload-individuals-mud" Icon="@Icons.Material.Filled.Upload">
             Upload Individuals
         </MudNavLink>
     </MudNavMenu>
 </MudDrawer>
 
-
 @code {
     private bool isNavMenuCollapsed = true;
-    private string name;
+    private bool isAuthenticated;
+    private bool showMyFamilyLink;
+    private string? userName;
 
-    private void ToggleNavMenu()
+    protected override async Task OnInitializedAsync()
     {
-        isNavMenuCollapsed = !isNavMenuCollapsed;
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        isAuthenticated = user.Identity?.IsAuthenticated == true;
+
+        if (isAuthenticated)
+        {
+            // Load the full ApplicationUser so we can check PersonID
+            var appUser = await UserManager.GetUserAsync(user);
+            showMyFamilyLink = appUser?.PersonID > 0;
+            userName = user.Identity?.Name;
+        }
     }
+
+    private void ToggleNavMenu() => isNavMenuCollapsed = !isNavMenuCollapsed;
 }

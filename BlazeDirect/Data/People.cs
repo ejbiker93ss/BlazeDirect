@@ -24,9 +24,6 @@ namespace BlazeDirect.Data
         public DateTime? JoinedDate { get; set; } = DateTime.Now;
         public DateTime? BirthDate { get; set; }
         public DateTime? BaptismDate { get; set; }
-        public string? BirthPlace { get; set; }
-        public DateTime? DeathDate { get; set; }
-        public string? DeathPlace { get; set; }
         public string? Patronyme { get; set; }
         [Required]
         public bool? IsMale { get; set; }
@@ -39,9 +36,9 @@ namespace BlazeDirect.Data
         public string? IdIndividual { get; set; }
         public string? PartnerId { get; set; }
 
-       
+
     }
-   
+
     [Table("Relationships")]
     public class Relationship
     {

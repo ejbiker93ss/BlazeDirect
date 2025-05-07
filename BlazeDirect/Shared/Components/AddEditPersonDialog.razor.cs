@@ -1,8 +1,8 @@
-﻿using BlazeDirect.Data.Models;
-using BlazeDirect.Data;
+﻿using BlazeDirect.Data;
+using BlazeDirect.Data.Models;
+using BlazeDirect.Data.Services;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
-using BlazeDirect.Data.Services;
 
 namespace BlazeDirect.Shared.Components
 {
@@ -18,7 +18,7 @@ namespace BlazeDirect.Shared.Components
             MaxWidth = MaxWidth.Large,
             FullWidth = true
         };
-     
+
         protected override async Task OnInitializedAsync()
         {
             await base.OnInitializedAsync();
@@ -40,16 +40,17 @@ namespace BlazeDirect.Shared.Components
         //Call from PersonAddForm-EventCallback
         protected async Task UpdatePersonInfo(PersonViewModel person)
         {
-            PersonViewModel.IsNew = true;            
+            PersonViewModel.IsNew = true;
             await CloseAddEditPersonDialog.InvokeAsync(PersonViewModel);
         }
 
 
         //Family relationship related code
         [Inject]
-        protected IRelationshipService RelationshipService { get; set; }       
+        protected IRelationshipService RelationshipService { get; set; }
         protected RelationshipViewModel RelationshipViewModel = new RelationshipViewModel();
-        protected List<Relationship> Relationships = new List<Relationship>();        
+        protected List<Relationship> Relationships = new List<Relationship>();
+        protected List<ApplicationUser> Users = new List<ApplicationUser>();
         protected async Task LoadRelationshipTable()
         {
             Relationships = await RelationshipService.GetAllRelationshipByPersonIdAsync(PersonViewModel.Id);
@@ -83,7 +84,7 @@ namespace BlazeDirect.Shared.Components
             RelationshipViewModel = new RelationshipViewModel();
             Relationships = await RelationshipService.GetAllRelationshipByPersonIdAsync(PersonViewModel.Id);
         }
-        
+
         //public async Task Dispose()
         //{
         //    await RelationshipService.Dispose();

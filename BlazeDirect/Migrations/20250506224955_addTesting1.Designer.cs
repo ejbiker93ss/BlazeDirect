@@ -4,6 +4,7 @@ using BlazeDirect.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BlazeDirect.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250506224955_addTesting1")]
+    partial class addTesting1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -30,6 +33,9 @@ namespace BlazeDirect.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
 
+                    b.Property<string>("Church")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
@@ -40,6 +46,9 @@ namespace BlazeDirect.Migrations
 
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
+
+                    b.Property<string>("FullName")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
@@ -73,7 +82,7 @@ namespace BlazeDirect.Migrations
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("bit");
 
-                    b.Property<int>("UserLevelID")
+                    b.Property<int?>("UserLevelIDId")
                         .HasColumnType("int");
 
                     b.Property<string>("UserName")
@@ -89,6 +98,8 @@ namespace BlazeDirect.Migrations
                         .IsUnique()
                         .HasDatabaseName("UserNameIndex")
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
+
+                    b.HasIndex("UserLevelIDId");
 
                     b.ToTable("AspNetUsers", (string)null);
                 });
@@ -539,6 +550,15 @@ namespace BlazeDirect.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
+                });
+
+            modelBuilder.Entity("BlazeDirect.Data.ApplicationUser", b =>
+                {
+                    b.HasOne("BlazeDirect.Data.UserLevel", "UserLevelID")
+                        .WithMany()
+                        .HasForeignKey("UserLevelIDId");
+
+                    b.Navigation("UserLevelID");
                 });
 
             modelBuilder.Entity("BlazeDirect.Data.Church", b =>

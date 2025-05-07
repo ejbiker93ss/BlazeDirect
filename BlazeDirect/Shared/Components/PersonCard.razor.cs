@@ -1,7 +1,6 @@
 ﻿using BlazeDirect.Data;
 using BlazeDirect.Data.Models;
 using BlazeDirect.Data.Services;
-using BlazeDirect.Pages;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 
@@ -10,7 +9,7 @@ namespace BlazeDirect.Shared.Components
     public class PersonCardBase : ComponentBase
     {
         public MudDataGrid<Person> dataGrid;
-        
+
         [Inject]
         protected IPersonService PersonService { get; set; }
         [Inject]
@@ -19,7 +18,7 @@ namespace BlazeDirect.Shared.Components
         public PersonViewModel PersonViewModel = new PersonViewModel();
         protected List<Church> Churches = new List<Church>();
         protected List<Person> Peoples = new List<Person>();
-        protected List<Person> SearchedItems = new List<Person>();        
+        protected List<Person> SearchedItems = new List<Person>();
         public int ActionIndex = 0;
 
         protected override async Task OnInitializedAsync()
@@ -35,7 +34,7 @@ namespace BlazeDirect.Shared.Components
 
             StateHasChanged();
         }
-        protected async Task ShowPersonEditDialog(Person? person=null)
+        protected async Task ShowPersonEditDialog(Person? person = null)
         {
             PersonViewModel = new PersonViewModel();
             if (person != null && person.Id > 0)
@@ -75,9 +74,6 @@ namespace BlazeDirect.Shared.Components
                         //JoinedDate = personViewModel.JoinedDate,
                         BirthDate = model.BirthDate,
                         BaptismDate = model.BaptismDate,
-                        BirthPlace = model.BirthPlace,
-                        DeathDate = model.DeathDate,
-                        DeathPlace = model.DeathPlace,
                         Patronyme = model.Patronyme,
                         IsMale = model.IsMale == 1 ? true : false,
                         Notes = model.Notes,
@@ -104,9 +100,6 @@ namespace BlazeDirect.Shared.Components
                     //JoinedDate = personViewModel.JoinedDate,
                     person.BirthDate = model.BirthDate;
                     person.BaptismDate = model.BaptismDate;
-                    person.BirthPlace = model.BirthPlace;
-                    person.DeathDate = model.DeathDate;
-                    person.DeathPlace = model.DeathPlace;
                     person.Patronyme = model.Patronyme;
                     person.IsMale = model.IsMale == 1 ? true : false;
                     person.Notes = model.Notes;
@@ -124,7 +117,7 @@ namespace BlazeDirect.Shared.Components
 
             PersonViewModel.IsDialogVisible = false;
             StateHasChanged();
-        }       
+        }
 
 
         // cod for custom search 
@@ -136,7 +129,7 @@ namespace BlazeDirect.Shared.Components
         {
             PersonSearchModel = new PersonSearchModel();
             IsOpenSearchPanel = !IsOpenSearchPanel;
-         
+
             if (IsOpenSearchPanel)
                 SearchedItems = Peoples;
         }
@@ -145,7 +138,7 @@ namespace BlazeDirect.Shared.Components
             if (string.IsNullOrWhiteSpace(mainSearchString))
                 return true;
 
-            var value = $"{person.FirstName} {person.LastName} {person.Email} {person.Address} {person.DeathPlace} {person.DeathPlace} {person.Phone} {person.Notes}";
+            var value = $"{person.FirstName} {person.LastName} {person.Email} {person.Address} {person.Phone} {person.Notes}";
 
             if (value.Contains(mainSearchString, StringComparison.OrdinalIgnoreCase))
                 return true;
@@ -170,7 +163,7 @@ namespace BlazeDirect.Shared.Components
                 SearchedItems = SearchedItems.Where(x => x.Phone.Contains(PersonSearchModel.Phone, StringComparison.OrdinalIgnoreCase)).ToList();
 
             if (!string.IsNullOrEmpty(PersonSearchModel.Status))
-           SearchedItems = SearchedItems.Where(x => $"{x.FirstName} {x.LastName}".Contains(PersonSearchModel.Status, StringComparison.OrdinalIgnoreCase)).ToList();
+                SearchedItems = SearchedItems.Where(x => $"{x.FirstName} {x.LastName}".Contains(PersonSearchModel.Status, StringComparison.OrdinalIgnoreCase)).ToList();
 
         }
         public void SearchByName(string val)
@@ -182,7 +175,7 @@ namespace BlazeDirect.Shared.Components
         public void SearchByArea(string val)
         {
             SearchedItems = Peoples;
-            PersonSearchModel.Area = val; 
+            PersonSearchModel.Area = val;
             Search();
         }
         public void SearchByAge(string val)
@@ -194,32 +187,32 @@ namespace BlazeDirect.Shared.Components
         public void SearchByStatus(string val)
         {
             SearchedItems = Peoples;
-            PersonSearchModel.Status = val; 
+            PersonSearchModel.Status = val;
             Search();
             // SearchedItems = Peoples.Where(x => x..Contains(val, StringComparison.OrdinalIgnoreCase)).ToList();
         }
         public void SearchByEmail(string val)
         {
             SearchedItems = Peoples;
-            PersonSearchModel.Email = val; 
+            PersonSearchModel.Email = val;
             Search();
 
         }
         public void SearchByPhone(string val)
         {
             SearchedItems = Peoples;
-            PersonSearchModel.Phone = val; 
+            PersonSearchModel.Phone = val;
             Search();
         }
 
         public void ClearFilter()
         {
             SearchedItems = Peoples;
-            PersonSearchModel = new PersonSearchModel(); 
+            PersonSearchModel = new PersonSearchModel();
             Search();
-           
+
         }
-        
+
         public async Task Dispose()
         {
             PersonService.Dispose();
@@ -252,9 +245,6 @@ namespace BlazeDirect.Shared.Components
                     //JoinedDate = personViewModel.JoinedDate,
                     BirthDate = model.BirthDate,
                     BaptismDate = model.BaptismDate,
-                    BirthPlace = model.BirthPlace,
-                    DeathDate = model.DeathDate,
-                    DeathPlace = model.DeathPlace,
                     Patronyme = model.Patronyme,
                     IsMale = model.IsMale == true ? 1 : 0,
                     Notes = model.Notes,
