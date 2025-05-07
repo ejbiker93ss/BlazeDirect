@@ -9,25 +9,27 @@ namespace BlazeDirect.Shared.Components
     public class PersonCardBase : ComponentBase
     {
         public MudDataGrid<Person> dataGrid;
-
+        [Parameter]
+        public required ApplicationUser User { get; set; }
+        
         [Inject]
         protected IPersonService PersonService { get; set; }
         [Inject]
         protected IChurchService ChurchService { get; set; }
-        [Parameter]
-        public required ApplicationUser User { get; set; }
-        public bool IsEditor { get; set; }
-        public PersonViewModel PersonViewModel = new PersonViewModel();
-        protected List<Church> Churches = new List<Church>();
+        [Inject]
+        protected IDialogService DialogService { get; set; }
+
+        public bool IsEditor { get; set; }        
         protected List<Person> Peoples = new List<Person>();
         protected List<Person> SearchedItems = new List<Person>();
         public int ActionIndex = 0;
 
         protected override async Task OnInitializedAsync()
         {
-            IsEditor = User.UserLevelID > 1;
+            //IsEditor = User.UserLevelID > 1;
             await base.OnInitializedAsync();
         }
+      
         protected override async void OnAfterRender(bool firstRender)
         {
             if (firstRender)
@@ -37,15 +39,7 @@ namespace BlazeDirect.Shared.Components
 
             StateHasChanged();
         }
-        protected async Task ShowPersonEditDialog(Person? person = null)
-        {
-            PersonViewModel = new PersonViewModel();
-            if (person != null && person.Id > 0)
-                await GetPerson(person.Id);
-
-            PersonViewModel.Churches = await GetChurches();
-            PersonViewModel.IsDialogVisible = true;
-        }
+      
         public void ShowGridAction(Person person)
         {
             if (ActionIndex == person.Id)
@@ -54,72 +48,36 @@ namespace BlazeDirect.Shared.Components
                 ActionIndex = person.Id;
         }
 
-        // call from AddEditPersonDialog-EventCallback-
-        protected async Task CloseAddEditPersonDialog(PersonViewModel model)
-        {
-            if (PersonViewModel.IsNew)
-            {
-                var person = await PersonService.GetPersonByIdAsync(model.Id);
-                if (person == null)
-                {
-                    person = new Person()
-                    {
-                        Id = model.Id,
-                        UserId = model.UserId,
-                        FirstName = model.FirstName,
-                        MiddleName = model.MiddleName,
-                        LastName = model.LastName,
-                        Nickname = model.Nickname,
-                        Phone = model.Phone,
-                        Email = model.Email,
-                        Address = model.Address,
-                        IsActive = model.IsActive == 1 ? true : false,
-                        //JoinedDate = personViewModel.JoinedDate,
-                        BirthDate = model.BirthDate,
-                        BaptismDate = model.BaptismDate,
-                        Patronyme = model.Patronyme,
-                        IsMale = model.IsMale == 1 ? true : false,
-                        Notes = model.Notes,
-                        ChurchId = model.ChurchId,
-                        Uid = model.Uid,
-                        IdFather = model.IdFather,
-                        IdMother = model.IdMother,
-                        IdIndividual = model.IdIndividual,
-                        PartnerId = model.PartnerId
-                    };
-                    await PersonService.AddPersonAsync(person);
-                }
-                else
-                {
-                    person.UserId = model.UserId;
-                    person.FirstName = model.FirstName;
-                    person.MiddleName = model.MiddleName;
-                    person.LastName = model.LastName;
-                    person.Nickname = model.Nickname;
-                    person.Phone = model.Phone;
-                    person.Email = model.Email;
-                    person.Address = model.Address;
-                    person.IsActive = model.IsActive == 1 ? true : false;
-                    //JoinedDate = personViewModel.JoinedDate,
-                    person.BirthDate = model.BirthDate;
-                    person.BaptismDate = model.BaptismDate;
-                    person.Patronyme = model.Patronyme;
-                    person.IsMale = model.IsMale == 1 ? true : false;
-                    person.Notes = model.Notes;
-                    person.ChurchId = model.ChurchId;
-                    person.Uid = model.Uid;
-                    person.IdFather = model.IdFather;
-                    person.IdMother = model.IdMother;
-                    person.IdIndividual = model.IdIndividual;
-                    person.PartnerId = model.PartnerId;
-                    await PersonService.UpdatePersonAsync(person);
-                }
 
+        // For PersonEdit Dialog     
+        protected async Task ShowPersonEditDialog(int personId = 0)
+        {
+            //var allRelationShip = await RelationshipService.GetAllRelationshipTypeAsync();
+
+            var parameters = new DialogParameters
+            {
+                ["PersonId"] = personId
+            };
+
+            var options = new DialogOptions
+            {
+                CloseButton = true,
+                MaxWidth = MaxWidth.Large,
+                FullWidth = true
+            };
+
+            var dialog = await DialogService.ShowAsync<AddEditPersonDialog>(
+               personId == 0 ? "Add New Person" : "Update Person",
+                parameters: parameters,
+                options: options
+            );
+
+            var result = await dialog.Result;
+
+            if (!result.Canceled && result.Data != null)
+            {
                 await GetPersons();
             }
-
-            PersonViewModel.IsDialogVisible = false;
-            StateHasChanged();
         }
 
 
@@ -226,44 +184,9 @@ namespace BlazeDirect.Shared.Components
         {
             Peoples = await PersonService.GetAllPersonAsync();
             SearchedItems = Peoples;
+           Thread.Sleep(100);
         }
-        private async Task GetPerson(int personId)
-        {
-            Thread.Sleep(100);
-            var model = await PersonService.GetPersonByIdAsync(personId);
-            if (model != null)
-            {
-                PersonViewModel = new PersonViewModel()
-                {
-                    Id = model.Id,
-                    UserId = model.UserId,
-                    FirstName = model.FirstName,
-                    MiddleName = model.MiddleName,
-                    LastName = model.LastName,
-                    Nickname = model.Nickname,
-                    Phone = model.Phone,
-                    Email = model.Email,
-                    Address = model.Address,
-                    IsActive = model.IsActive == true ? 1 : 0,
-                    //JoinedDate = personViewModel.JoinedDate,
-                    BirthDate = model.BirthDate,
-                    BaptismDate = model.BaptismDate,
-                    Patronyme = model.Patronyme,
-                    IsMale = model.IsMale == true ? 1 : 0,
-                    Notes = model.Notes,
-                    ChurchId = model.ChurchId,
-                    Uid = model.Uid,
-                    IdFather = model.IdFather,
-                    IdMother = model.IdMother,
-                    IdIndividual = model.IdIndividual,
-                    PartnerId = model.PartnerId
-                };
-            }
-        }
-        private async Task<List<Church>> GetChurches()
-        {
-            return await ChurchService.GetAllChurchAsync();
-        }
+    
     }
     public class PersonSearchModel
     {

@@ -137,13 +137,13 @@
                             <MudIcon Icon="@Icons.Material.Filled.RemoveRedEye" Color="Color.Primary" Size="Size.Small" Title="Person" />
                             <span>View Details</span>
                         </a>
-                        @if (IsEditor)
-                        {
-                            <a class="grd-action-a" @onclick="@(() => ShowPersonEditDialog(context.Item))">
+                        @* @if (IsEditor)
+                        { *@
+                            <a class="grd-action-a" @onclick="@(() => ShowPersonEditDialog(context.Item.Id))">
                                 <MudIcon Icon="@Icons.Material.Filled.Edit" Color="Color.Default" Size="Size.Small" Title="Person" />
                                 <span>Edit</span>
                             </a>
-                        }
+                      @*   } *@
                         <a class="grd-action-a">
                             <MudIcon Icon="@Icons.Material.Filled.FamilyRestroom" Color="Color.Tertiary" Size="Size.Small" Title="Person" />
                             <span>Family Tree</span>
@@ -158,7 +158,7 @@
     </MudDataGrid>
 
 </div>
-<AddEditPersonDialog PersonViewModel="PersonViewModel" CloseAddEditPersonDialog="CloseAddEditPersonDialog"></AddEditPersonDialog>
+@* <AddEditPersonDialog CloseAddEditPersonDialog="CloseAddEditPersonDialog"></AddEditPersonDialog> *@
 
 
 

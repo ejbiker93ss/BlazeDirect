@@ -8,6 +8,45 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Data\Migrations\**" />
+    <Content Remove="Data\Migrations\**" />
+    <EmbeddedResource Remove="Data\Migrations\**" />
+    <None Remove="Data\Migrations\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Migrations\20250427011746_init.cs" />
+    <Compile Remove="Migrations\20250427011746_init.Designer.cs" />
+    <Compile Remove="Migrations\20250427012752_initCreate2.cs" />
+    <Compile Remove="Migrations\20250427012752_initCreate2.Designer.cs" />
+    <Compile Remove="Migrations\20250429214921_AddUserLevelID.cs" />
+    <Compile Remove="Migrations\20250429214921_AddUserLevelID.Designer.cs" />
+    <Compile Remove="Migrations\20250504042942_CustomIdentityUser.cs" />
+    <Compile Remove="Migrations\20250504042942_CustomIdentityUser.Designer.cs" />
+    <Compile Remove="Migrations\20250504152826_UpdatePeopleTable.cs" />
+    <Compile Remove="Migrations\20250504152826_UpdatePeopleTable.Designer.cs" />
+    <Compile Remove="Migrations\20250506224621_addToUsersTable.cs" />
+    <Compile Remove="Migrations\20250506224621_addToUsersTable.Designer.cs" />
+    <Compile Remove="Migrations\20250506224955_addTesting1.cs" />
+    <Compile Remove="Migrations\20250506224955_addTesting1.Designer.cs" />
+    <Compile Remove="Migrations\20250506225633_addTest2.cs" />
+    <Compile Remove="Migrations\20250506225633_addTest2.Designer.cs" />
+    <Compile Remove="Migrations\20250506230005_removeChurch.cs" />
+    <Compile Remove="Migrations\20250506230005_removeChurch.Designer.cs" />
+    <Compile Remove="Migrations\20250506230215_addUserLevels.cs" />
+    <Compile Remove="Migrations\20250506230215_addUserLevels.Designer.cs" />
+    <Compile Remove="Migrations\20250506230308_addUserLevels2.cs" />
+    <Compile Remove="Migrations\20250506230308_addUserLevels2.Designer.cs" />
+    <Compile Remove="Migrations\20250507113251_changeLeveltostring.cs" />
+    <Compile Remove="Migrations\20250507113251_changeLeveltostring.Designer.cs" />
+    <Compile Remove="Migrations\20250507115609_changeToUsers.cs" />
+    <Compile Remove="Migrations\20250507115609_changeToUsers.Designer.cs" />
+    <Compile Remove="Migrations\20250507135710_AllTables.cs" />
+    <Compile Remove="Migrations\20250507135710_AllTables.Designer.cs" />
+    <Compile Remove="Migrations\ApplicationDbContextModelSnapshot.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="CsvHelper" Version="33.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="9.0.4" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="9.0.4" />
@@ -23,7 +62,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Data\Migrations\" />
+    <Folder Include="Migrations\" />
   </ItemGroup>
 
 </Project>

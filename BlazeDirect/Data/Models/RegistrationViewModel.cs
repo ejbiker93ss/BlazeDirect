@@ -4,9 +4,14 @@ namespace BlazeDirect.Data.Models
 {
     public class RegistrationViewModel
     {
-        [Required]        
-        [Display(Name = "FullName")]
-        public string FullName { get; set; }
+        [DataType(DataType.Text)]
+        [Display(Name = "First Name")]
+        public string FirstName { get; set; }
+
+        [DataType(DataType.Text)]
+        [Display(Name = "Last Name")]
+        public string LastName { get; set; }
+
         /// <summary>
         ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
         ///     directly from your code. This API may change or be removed in future releases.
@@ -46,10 +51,16 @@ namespace BlazeDirect.Data.Models
         [DataType(DataType.PhoneNumber)]
         [Display(Name = "Phone Number")]
         public string PhoneNumber { get; set; }
-
         
         [DataType(DataType.Text)]
         [Display(Name = "Church")]
         public string Church { get; set; }
+        
+        
+       
+        [Required]
+        [DataType(DataType.Date)]
+        [Display(Name = "Birth Date")]
+        public DateOnly BirthDate { get; set; }
     }
 }

@@ -9,6 +9,7 @@ namespace BlazeDirect.Data
     {
         [Key]
         public int Id { get; set; }
+        [Required]
         public Guid UserId { get; set; }
         [Required]
         public string? FirstName { get; set; }
@@ -20,14 +21,16 @@ namespace BlazeDirect.Data
         public string? Phone { get; set; }
         public string? Email { get; set; }
         public string? Address { get; set; }
-        public bool? IsActive { get; set; } = true;
+
+        [Required] 
+        public bool IsActive { get; set; } = true;
         public DateTime? JoinedDate { get; set; } = DateTime.Now;
         public DateTime? BirthDate { get; set; }
         public DateTime? BaptismDate { get; set; }
         public string? Patronyme { get; set; }
         [Required]
-        public bool? IsMale { get; set; }
-        public bool? IsFemale => !IsMale;
+        public bool IsMale { get; set; }
+        public bool IsFemale => !IsMale;
         public string? Notes { get; set; }
         public int ChurchId { get; set; }
         public string? Uid { get; set; }

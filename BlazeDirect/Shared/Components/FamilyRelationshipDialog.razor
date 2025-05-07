@@ -1,54 +1,59 @@
-﻿@using BlazeDirect.Data
+﻿@inherits FamilyRelationshipDialogBase
 
-@inherits FamilyRelationshipDialogBase
 
-<MudDialog @bind-Visible="@RelationshipViewModel.ShowFamilyDialog" Class="w-100 px-5 py-2">
-    <TitleContent>
-        <h4 class="float-start">Add Family Relationship</h4>
-        <button type="button" class="btn-close float-end" @onclick="CloseFamilyDialog"></button>
-    </TitleContent>
-    <DialogContent>
-        <EditForm Model="@RelationshipViewModel" OnValidSubmit="SaveRelationshipAsync">
-            <DataAnnotationsValidator />
-            <input type="hidden" @bind-value="RelationshipViewModel.PersonId" />
-            <div class="row mb-4">
-                <div class="col-sm">
-                    <label for="PersonName" class="form-label">Person Name</label>
-                    <InputText class="form-control" disabled @bind-Value=@RelationshipViewModel.PersonName></InputText>
-                </div>
-            </div> <div class="row mb-4">
-                <div class="col-sm">
-                    <label for="RelatedPersonId" class="form-label">Find Related Person</label>
-                    <MudAutocomplete T="Person" InputId="RelatedPersonId" @bind-Value="RelationshipViewModel.RelatedPerson"
-                                     SearchFunc="Search"
-                                     InputMode="InputMode.numeric"
-                                     ToStringFunc="@(e=> e==null?null : $"{e.FirstName} {e.LastName}")">
-                    </MudAutocomplete>
-                </div>
-            </div>
-            <div class="row mb-4">
-                <div class="col-sm">
-                    <label for="relationshipTypeId" class="form-label">Relationship Type</label>
-                    <MudSelect @bind-Value="RelationshipViewModel.RelationshipTypeId">
-                        @foreach (var relation in RelationshipViewModel.RelationshipType)
-                        {
-                            <MudSelectItem Value="@relation.Id">@relation.Name</MudSelectItem>
-                        }
-                    </MudSelect>
+<MudDialogContent Class="p-4">
+    <MudForm @ref="Relationshipform" Model="Relationship" OnValidSubmit="Submit">
+    <MudGrid GutterSize="3">
+        <MudItem xs="12" sm="12" Class="mp-0">
+            <input type="hidden" @bind-value="Relationship.PersonId" />
+            <label for="PersonName" class="form-label">Person</label>
+            <MudTextField @bind-Value="PersonName"
+                 Variant="Variant.Outlined"
+                 Required="true" Disabled="true"
+                 FullWidth="true" />
 
-                </div>
-            </div>
-            <div class="row mb-4">
-                <div class="col-sm">
-                    <label for="Notes" class="form-label">Notes (Optional)</label>
-                    <InputTextArea id="Notes" class="form-control" placeholder="Add any notes about this relationship..." @bind-Value="RelationshipViewModel.Notes" />
-                </div>
-            </div><div class="row mb-5 float-end">
-                @* <button type="button" class="btn btn-secondary w-25" @onclick="CloseDialog">Cancel</button> *@
-                <button type="submit" class="btn btn-primary text-center " style="width:250px;">
-                    Create Relationship
-                </button>
-            </div>
-        </EditForm>
-    </DialogContent>
-</MudDialog>
+        </MudItem>
+            <MudItem xs="12" sm="12">
+                <label for="relationshipTypeId" class="form-label">Related Person</label>
+                <MudAutocomplete T="Person" InputId="RelatedPersonId" @bind-Value="Relationship.RelatedPerson"
+                    SearchFunc="Search"
+                    InputMode="InputMode.numeric"
+                    ToStringFunc="@(e=> e==null?null : $"{e.FirstName} {e.LastName}")"
+                    Required="true">
+                </MudAutocomplete>
+      </MudItem>
+      <MudItem xs="12" sm="12">
+                <label for="relationshipTypeId" class="form-label">Relationship Type</label>
+                <MudSelect @bind-Value="Relationship.RelationshipTypeId" Required="true">
+                    @foreach (var relation in AllRelationShipType)
+                    {
+                        <MudSelectItem Value="@relation.Id">@relation.Name</MudSelectItem>
+                    }
+                </MudSelect>
+            </MudItem>
+            <MudItem xs="12" sm="12">
+      <label for="Notes" class="form-label">Notes (Optional)</label>
+             
+                <MudTextField @bind-Value="Relationship.Notes"
+                                      Label="Add any notes about this relationship..."
+                      Variant="Variant.Outlined"
+                      Required="true"
+                      FullWidth="true" />
+      </MudItem>
+    </MudGrid>
+  </MudForm>
+</MudDialogContent>
+<MudDialogActions Class="px-4 pb-4 d-flex justify-content-end">
+  <MudButton Variant="Variant.Text"
+             OnClick="Cancel">
+    Cancel
+  </MudButton>
+  <MudButton ButtonType="ButtonType.Submit"
+               OnClick="Submit"
+               Disabled="@(Relationshipform?.IsValid != true)"
+             Variant="Variant.Filled"
+             Color="Color.Primary"
+             Class="ms-2">
+        Create Relationship
+  </MudButton>
+</MudDialogActions>

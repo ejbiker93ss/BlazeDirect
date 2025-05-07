@@ -2,89 +2,99 @@
 using BlazeDirect.Data.Models;
 using BlazeDirect.Data.Services;
 using Microsoft.AspNetCore.Components;
+using Microsoft.IdentityModel.Tokens;
 using MudBlazor;
 
 namespace BlazeDirect.Shared.Components
 {
     public class AddEditPersonDialogBase : ComponentBase
     {
+        [CascadingParameter]
+        public IMudDialogInstance MudDialog { get; set; }      
         [Parameter]
-        public PersonViewModel PersonViewModel { get; set; }
-        [Parameter]
-        public EventCallback<PersonViewModel> CloseAddEditPersonDialog { get; set; }
-
-        protected readonly DialogOptions dialogOptions = new()
-        {
-            MaxWidth = MaxWidth.Large,
-            FullWidth = true
-        };
-
+        public int PersonId { get; set; }       
+        [Inject] 
+        protected ISnackbar Snackbar { get; set; }
+        
         protected override async Task OnInitializedAsync()
         {
             await base.OnInitializedAsync();
         }
+        
         protected override async void OnAfterRender(bool firstRender)
         {
             StateHasChanged();
         }
-        protected async Task ClosePersonDialog()
-        {
-            PersonViewModel = new PersonViewModel()
-            {
-                IsDialogVisible = false
-            };
-
-            await CloseAddEditPersonDialog.InvokeAsync(PersonViewModel);
-        }
-
+        
         //Call from PersonAddForm-EventCallback
-        protected async Task UpdatePersonInfo(PersonViewModel person)
+        protected async Task RefreshPersonaGrid(bool isRefresh)
         {
-            PersonViewModel.IsNew = true;
-            await CloseAddEditPersonDialog.InvokeAsync(PersonViewModel);
+            //if (isRefresh)
+                MudDialog.Close(isRefresh);
         }
 
 
         //Family relationship related code
         [Inject]
+        protected IDialogService DialogService { get; set; }
+        [Inject]
         protected IRelationshipService RelationshipService { get; set; }
-        protected RelationshipViewModel RelationshipViewModel = new RelationshipViewModel();
-        protected List<Relationship> Relationships = new List<Relationship>();
-        protected List<ApplicationUser> Users = new List<ApplicationUser>();
+        protected List<Relationship> Relationships = new List<Relationship>();        
+        
         protected async Task LoadRelationshipTable()
         {
-            Relationships = await RelationshipService.GetAllRelationshipByPersonIdAsync(PersonViewModel.Id);
+            Relationships = await RelationshipService.GetAllRelationshipByPersonIdAsync(PersonId);
         }
-
+        
         protected async Task ShowFamilyDialog()
         {
-            RelationshipViewModel = new RelationshipViewModel();
-            RelationshipViewModel.RelationshipType = await RelationshipService.GetAllRelationshipTypeAsync();
-            RelationshipViewModel.PersonId = PersonViewModel.Id;
-            RelationshipViewModel.PersonName = $"{PersonViewModel.FirstName} {PersonViewModel.LastName}";
-            RelationshipViewModel.ShowFamilyDialog = true;
-        }
+            var allRelationShip = await RelationshipService.GetAllRelationshipTypeAsync();
 
-        // Call from FamilyRelationshipDialog-EventCallback
-        protected async Task UpdateFamilyInfo(RelationshipViewModel model)
-        {
-            if (model.RelatedPerson != null)
+            var parameters = new DialogParameters
             {
-                await RelationshipService.AddRelationshipAsync(new Relationship()
-                {
-                    PersonId = PersonViewModel.Id,
-                    Notes = model.Notes,
-                    RelatedPersonId = model.RelatedPerson.Id,
-                    RelationshipTypeId = model.RelationshipTypeId,
-                    MarriageStartDate = new DateTime(),
-                    MarriageEndDate = new DateTime(),
-                    CreatedAt = new DateTime()
-                });
-            }
-            RelationshipViewModel = new RelationshipViewModel();
-            Relationships = await RelationshipService.GetAllRelationshipByPersonIdAsync(PersonViewModel.Id);
-        }
+                ["AllRelationShipType"] = allRelationShip,
+                ["MyRelationships"] = Relationships,
+                ["PersonId"] = PersonId
+            };
 
+            var options = new DialogOptions
+            {
+                CloseButton = true,
+                MaxWidth = MaxWidth.Small,
+                FullWidth = true
+            };
+
+            var dialog = await DialogService.ShowAsync<FamilyRelationshipDialog>(
+                "Add Family Relationship",
+                parameters: parameters,
+                options: options
+            );
+
+            var result = await dialog.Result;
+
+            if (!result.Canceled && result.Data is Relationship relationship)
+            {
+               // bool ok;
+
+                if (relationship.Id>0)
+                {
+                    Snackbar.Add("Relationship note created yet", Severity.Warning);
+                    return;
+                }
+                else
+                {
+                    //ok=   await RelationshipService.AddRelationshipAsync(relationship);
+                    await RelationshipService.AddRelationshipAsync(relationship);
+                    Snackbar.Add("Relationship created successfully", Severity.Success);
+                }
+
+
+                await LoadRelationshipTable();
+
+            }
+        }
+       
+        
         //public async Task Dispose()
         //{
         //    await RelationshipService.Dispose();
